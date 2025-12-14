@@ -1,0 +1,290 @@
+/* ===== RESET & BASE ===== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f5f6fa;
+  --card: #ffffff;
+  --text: #1c1c1e;
+  --subtext: #6e6e73;
+  --border: #e5e5ea;
+  --primary: #007aff;
+  --danger: #ff3b30;
+  --success: #34c759;
+  --radius: 14px;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI",
+    Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 32px;
+}
+
+/* ===== CONTAINER ===== */
+.container {
+  max-width: 1100px;
+  margin: auto;
+}
+
+/* ===== HEADINGS ===== */
+
+#header {
+  text-align: center;
+}
+
+h1 {
+  font-size: 28px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--subtext);
+  margin-bottom: 24px;
+}
+
+/* ===== FORM ===== */
+
+.form {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  position: relative;
+  justify-content: space-between;
+}
+
+input,
+select {
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background-color: var(--card);
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+#searchInput {
+  width: 20rem;
+}
+
+input::placeholder {
+  color: var(--subtext);
+}
+
+input:focus,
+select:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15);
+}
+
+#showPerPage {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* ===== TABLE ===== */
+.userTable {
+  background-color: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 14px 12px;
+  font-size: 14px;
+}
+
+th {
+  color: var(--subtext);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border);
+}
+
+td {
+  border-bottom: 1px solid var(--border);
+}
+
+/* Id column */
+th:nth-child(1),
+td:nth-child(1) {
+  width: 10%;
+}
+
+/* Name column */
+th:nth-child(2),
+td:nth-child(2) {
+  width: 15%;
+}
+
+/* Email column */
+th:nth-child(3),
+td:nth-child(3) {
+  width: 35%;
+}
+
+/* Status column */
+th:nth-child(4),
+td:nth-child(4) {
+  width: 15%;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* ===== STATUS ===== */
+td:nth-child(4) {
+  font-weight: 500;
+  color: var(--success);
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text); /* black text */
+  font-weight: 500;
+}
+
+/* Pulse indicator */
+.pulse {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  position: relative;
+}
+
+/* Active */
+.pulse.active {
+  background-color: var(--success);
+  box-shadow: 0 0 0 rgba(52, 199, 89, 0.6);
+  animation: pulseGreen 1.5s infinite;
+}
+
+/* Inactive */
+.pulse.inactive {
+  background-color: var(--danger);
+  opacity: 0.75;
+  /* box-shadow: 0 0 0 rgba(255, 48, 48, 0.5); */
+  /* animation: pulseRed 1.5s infinite; */
+}
+
+@keyframes pulseGreen {
+  0% {
+    box-shadow: 0 0 0 0 #34c75999;
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(52, 199, 89, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 199, 89, 0);
+  }
+}
+
+@keyframes pulseRed {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(255, 59, 48, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 59, 48, 0);
+  }
+}
+
+/* ===== BUTTONS ===== */
+button {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  background-color: var(--primary);
+  color: white;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+td button.dltBtn {
+  background-color: var(--danger);
+  margin-left: 8px;
+}
+
+/* ===== PAGINATION ===== */
+#pagination {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  margin: 24px 0 16px;
+}
+
+#pagination button {
+  background-color: var(--card);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+#pageBtns {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+#pageBtns .goto {
+  min-width: 36px;
+}
+
+#pagination .arrow {
+  font-weight: 500;
+}
+
+#pagination button:hover {
+  background-color: #f0f0f5;
+}
+
+.activePage {
+  background-color: #cdcdcd8e !important;
+}
+
+/* ===== GOTO DIRECT ===== */
+#gotoDirect {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+#gotoDirect input {
+  width: 80px;
+}
+
+/* ===== FOOTER INFO ===== */
+#showingPage {
+  text-align: center;
+  font-size: 13px;
+  color: var(--subtext);
+}
