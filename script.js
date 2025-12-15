@@ -17,13 +17,15 @@ const pageBtns = document.getElementById("pageBtns");
 const table = document.querySelector("table");
 
 // VARIABLES
-let perPageVal = perPage.value;
+let perPageVal = +perPage.value;
+let skipped = 0;
 let gotoPageVal = 1;
 let noofPages = 10;
 let users = [];
 
 // FUNCTIONS
-const getUsers = async (limit = 5, skip = 10) => {
+const getUsers = async (limit = perPageVal, skip = skipped) => {
+  skipped = skip;
   try {
     const res = await fetch(
       `${URL}?limit=${limit}&skip=${skip}&select=firstName,email,gender`
@@ -33,15 +35,15 @@ const getUsers = async (limit = 5, skip = 10) => {
 
     const data = await res.json();
     users = data.users;
+    await makeTable();
   } catch (err) {
     console.log(err.message);
   }
 };
 
-const load = async () => {
+(load = async () => {
   await getUsers();
-  await makeTable();
-};
+})();
 
 for (let i = 1; i <= noofPages; i++) {
   const pageBtn = document.createElement("button");
@@ -84,23 +86,27 @@ const updateStatus = (user) => {
 };
 
 const deleteUser = (user) => {
-  //   console.log(`${dltBtn.innerText}d`);
   console.log(user.firstName);
 };
 
 const goPrevPage = async () => {
   if (isLoading) return;
+  if (skipped + 1 === perPageVal - (perPageVal - 1)) {
+    console.log("cant go behind");
+    return;
+  }
   isLoading = true;
 
-  console.log("next page");
+  getUsers(perPageVal, skipped - perPageVal);
 
   isLoading = false;
 };
+
 const goNextPage = async () => {
   if (isLoading) return;
   isLoading = true;
 
-  console.log("next page");
+  getUsers(perPageVal, skipped + perPageVal);
 
   isLoading = false;
 };
@@ -154,4 +160,4 @@ gotoBtn.addEventListener("click", updateGotoPage);
 prvBtn.addEventListener("click", goPrevPage);
 nxtBtn.addEventListener("click", goNextPage);
 
-load();
+// load();
