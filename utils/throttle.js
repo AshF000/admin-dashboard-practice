@@ -1,4 +1,3 @@
-let isLoading = false;
 
 function throttle(fn, delay) {
   let lastCall = 0;

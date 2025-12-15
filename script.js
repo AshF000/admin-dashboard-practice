@@ -17,15 +17,20 @@ const pageBtns = document.getElementById("pageBtns");
 const table = document.querySelector("table");
 
 // VARIABLES
+let isLoading = false;
 let perPageVal = +perPage.value;
 let skipped = 0;
 let gotoPageVal = 1;
-let noofPages = 10;
+let total = 208;
+let noofPages = Math.ceil(total / perPageVal);
 let users = [];
+let currPage = 1;
 
 // FUNCTIONS
+const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 const getUsers = async (limit = perPageVal, skip = skipped) => {
-  skipped = skip;
+  // await delay(2000);
+
   try {
     const res = await fetch(
       `${URL}?limit=${limit}&skip=${skip}&select=firstName,email,gender`
@@ -34,10 +39,14 @@ const getUsers = async (limit = perPageVal, skip = skipped) => {
     if (!res.ok) throw new Error("res not okay");
 
     const data = await res.json();
+    total = data.total;
     users = data.users;
-    await makeTable();
+    noofPages = Math.ceil(total / perPageVal);
   } catch (err) {
     console.log(err.message);
+  } finally {
+    pageNums();
+    await makeTable();
   }
 };
 
@@ -45,23 +54,26 @@ const getUsers = async (limit = perPageVal, skip = skipped) => {
   await getUsers();
 })();
 
-for (let i = 1; i <= noofPages; i++) {
-  const pageBtn = document.createElement("button");
-  pageBtn.innerText = i;
-  pageBtn.classList.add("goto");
-  pageBtn.value = i;
+const pageNums = () => {
+  pageBtns.innerHTML = "";
+  let i = 1;
+  for (; i <= Math.min(5, noofPages); i++) {
+    console.log(i);
+    const pageBtn = document.createElement("button");
+    pageBtn.innerText = i;
+    pageBtn.classList.add("goto");
+    pageBtn.value = i;
+    if (+i === currPage) pageBtn.classList.add("activePage");
 
-  pageBtn.addEventListener("click", () => {
-    const currentActive = pageBtns.querySelector(".activePage");
-    if (currentActive) currentActive.classList.remove("activePage");
+    pageBtn.addEventListener("click", () => {
+      currPage = +pageBtn.value;
+      skipped = (currPage - 1) * perPageVal;
+      getUsers(perPageVal, skipped);
+    });
 
-    pageBtn.classList.add("activePage");
-
-    console.log(`Page ${pageBtn.value} clicked`);
-  });
-
-  pageBtns.appendChild(pageBtn);
-}
+    pageBtns.appendChild(pageBtn);
+  }
+};
 
 const switchLoading = () => {
   isLoading = !isLoading;
@@ -72,8 +84,8 @@ const showSearchInpValue = () => {
 };
 
 const updateShowPerPage = () => {
-  perPageVal = perPage.value;
-  console.log(perPageVal);
+  perPageVal = +perPage.value;
+  getUsers();
 };
 
 const updateGotoPage = () => {
@@ -89,26 +101,52 @@ const deleteUser = (user) => {
   console.log(user.firstName);
 };
 
-const goPrevPage = async () => {
-  if (isLoading) return;
-  if (skipped + 1 === perPageVal - (perPageVal - 1)) {
-    console.log("cant go behind");
-    return;
+const updatePrvBtn = (prev) => {
+  if (!prev) {
+    prvBtn.classList.add("disabled");
+  } else {
+    prvBtn.classList.remove("disabled");
   }
+  prvBtn.disabled = !prev;
+};
+
+const updateNxtBtn = (next) => {
+  if (!next) {
+    nxtBtn.classList.add("disabled");
+  } else {
+    nxtBtn.classList.remove("disabled");
+  }
+  nxtBtn.disabled = !next;
+};
+
+const goPrevPage = async () => {
+  updatePrvBtn(false);
+  if (isLoading) return;
+  skipped = Math.max(0, skipped - perPageVal);
+  if (skipped + 1 === perPageVal - (perPageVal - 1)) return;
+
   isLoading = true;
 
-  getUsers(perPageVal, skipped - perPageVal);
+  await getUsers(perPageVal, skipped);
 
   isLoading = false;
+  updatePrvBtn(true);
+  updateNxtBtn(true);
 };
 
 const goNextPage = async () => {
+  updateNxtBtn(true);
   if (isLoading) return;
+  skipped = Math.min(total - perPageVal, skipped + perPageVal);
+  if (skipped + perPageVal >= total) return;
+
   isLoading = true;
 
-  getUsers(perPageVal, skipped + perPageVal);
+  await getUsers(perPageVal, skipped);
 
   isLoading = false;
+  updateNxtBtn(true);
+  updatePrvBtn(true);
 };
 
 const makeTable = async () => {

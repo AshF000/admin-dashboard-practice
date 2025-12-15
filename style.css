@@ -249,6 +249,7 @@ td button.dltBtn {
 
 #pageBtns {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: center;
   justify-content: center;
@@ -266,8 +267,16 @@ td button.dltBtn {
   background-color: #f0f0f5;
 }
 
+#pagination button.disabled {
+  background-color: #c5c5c5;
+  cursor: not-allowed;
+}
+#pagination button.disabled:hover {
+  background-color: #c5c5c5 !important;
+}
+
 .activePage {
-  background-color: #cdcdcd8e !important;
+  background-color: #f200008e !important;
 }
 
 /* ===== GOTO DIRECT ===== */
