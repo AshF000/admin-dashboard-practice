@@ -228,6 +228,21 @@ td:nth-child(4) {
 }
 
 /* ===== BUTTONS ===== */
+/* button {
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  background-color: var(--primary);
+  color: white;
+  transition: 0.2s;
+}
+
+button:hover {
+  opacity: 0.9;
+} */
+
 button {
   border: none;
   border-radius: 10px;
@@ -257,10 +272,19 @@ td button.dltBtn {
   margin: 24px 0 16px;
 }
 
+/* #pagination button {
+  background-color: #2c2c2e;
+  color: var(--text);
+  border: 1px solid var(--border);
+} */
+
 #pagination button {
   background-color: #2c2c2e;
   color: var(--text);
   border: 1px solid var(--border);
+  min-width: 36px;
+  font-weight: 500;
+  cursor: pointer;
 }
 
 #pageBtns {
@@ -279,18 +303,39 @@ td button.dltBtn {
   font-weight: 500;
 }
 
-#pagination button:hover {
+/* #pagination button:hover {
   background-color: #3a3a3c;
-}
+} */
 
-#pagination button.disabled {
+/* #pagination button.disabled {
   background-color: #3a3a3c;
   color: #7d7d80;
   cursor: not-allowed;
+} */
+
+button:disabled,
+button.disabled {
+  background-color: #3a3a3c;
+  color: #7d7d80;
+  /* pointer-events: none; prevent clicks */
+  cursor: not-allowed !important; /* remove pointer */
+  opacity: 0.6;
 }
-#pagination button.disabled:hover {
+
+/* #pagination button.disabled:hover {
   background-color: #c5c5c5 !important;
+} */
+
+button:disabled:hover,
+button.disabled:hover {
+  background-color: #3a3a3c;
+  color: #7d7d80;
 }
+
+/* .activePage {
+  background-color: var(--primary) !important;
+  color: white;
+} */
 
 .activePage {
   background-color: var(--primary) !important;

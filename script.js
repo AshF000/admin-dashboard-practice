@@ -52,13 +52,17 @@ const getUsers = async (limit = perPageVal, skip = skipped) => {
 
 (load = async () => {
   await getUsers();
+  updatePrvBtn(currPage > 1);
+  updateNxtBtn(currPage < noofPages);
 })();
 
 const pageNums = () => {
   pageBtns.innerHTML = "";
-  let i = 1;
-  for (; i <= Math.min(5, noofPages); i++) {
-    console.log(i);
+  let start = Math.max(1, Math.min(currPage - 4, noofPages - 8));
+  let end = Math.min(noofPages, start + 8);
+
+  for (let i = start; i <= end; i++) {
+    // console.log(i);
     const pageBtn = document.createElement("button");
     pageBtn.innerText = i;
     pageBtn.classList.add("goto");
@@ -68,7 +72,7 @@ const pageNums = () => {
     pageBtn.addEventListener("click", () => {
       currPage = +pageBtn.value;
       skipped = (currPage - 1) * perPageVal;
-      getUsers(perPageVal, skipped);
+      gotoPage(currPage);
     });
 
     pageBtns.appendChild(pageBtn);
@@ -80,17 +84,23 @@ const switchLoading = () => {
 };
 
 const showSearchInpValue = () => {
-  console.log(searchInp.value);
+  const val = searchInp.value.toLowerCase();
+  const filteredUsers = users.filter(
+    (u) =>
+      u.firstName.toLowerCase().includes(val) ||
+      u.email.toLowerCase().includes(val)
+  );
+  makeTable(filteredUsers);
 };
 
 const updateShowPerPage = () => {
-  perPageVal = perPage.value;
-  console.log(perPageVal);
+  perPageVal = +perPage.value;
   currPage = 1;
-  getUsers(perPageVal, 0);
+  skipped = 0;
+  gotoPage(currPage);
 };
 
-const updateGotoPage = () => {
+const updateGotoPageInp = () => {
   console.log(gotoInp.value);
   gotoInp.value = "";
 };
@@ -103,18 +113,60 @@ const deleteUser = (user) => {
   console.log(user.firstName);
 };
 
-const updatePrvBtn = (prev) => {};
+// const updatePrvBtn = (prev) => {
+// };
 
-const updateNxtBtn = (next) => {};
+// const updateNxtBtn = (next) => {
+// };
 
-const goPrevPage = async () => {};
+const updatePrvBtn = (prev) => {
+  prvBtn.disabled = !prev;
+};
 
-const goNextPage = async () => {};
+const updateNxtBtn = (next) => {
+  nxtBtn.disabled = !next;
+};
 
-const makeTable = async () => {
+const gotoPage = async (page) => {
+  if (page < 1 || page > noofPages) return;
+
+  isLoading = true;
+
+  currPage = page;
+  skipped = perPageVal * (currPage - 1);
+
+  await getUsers(perPageVal, skipped);
+
+  isLoading = false;
+  updatePrvBtn(currPage > 1);
+  updateNxtBtn(currPage < noofPages);
+};
+
+const goPrevPage = async () => {
+  if (currPage === 1 || isLoading) return;
+  await gotoPage(currPage - 1);
+};
+
+const goNextPage = async () => {
+  if (currPage === noofPages || isLoading) return;
+  await gotoPage(currPage + 1);
+};
+
+const makeTable = async (list = users) => {
   table.innerHTML = "";
 
-  for (let user of users) {
+  const trFragment = document.createDocumentFragment();
+  const headTr = document.createElement("tr");
+
+  headTr.innerHTML = `<th>Id</th>
+        <th>Name</th>
+        <th>Mail</th>
+        <th>Status</th>
+        <th>Action</th>`;
+
+  trFragment.appendChild(headTr);
+
+  for (let user of list) {
     const newTr = document.createElement("tr");
     let gender = user.gender.toLowerCase();
 
@@ -136,15 +188,16 @@ const makeTable = async () => {
           }</button>
         </td>`;
 
-    table.appendChild(newTr);
-
     // Attach event listeners directly
     const statusBtn = newTr.querySelector(".statusBtn");
     const dltBtn = newTr.querySelector(".dltBtn");
 
     statusBtn.addEventListener("click", () => updateStatus(user));
     dltBtn.addEventListener("click", () => deleteUser(user));
+
+    trFragment.appendChild(newTr);
   }
+  table.appendChild(trFragment);
 };
 
 // FUNCTION VALUES
@@ -155,7 +208,7 @@ searchInp.addEventListener("input", debouncedSearchInp);
 
 perPage.addEventListener("change", updateShowPerPage);
 
-gotoBtn.addEventListener("click", updateGotoPage);
+gotoBtn.addEventListener("click", updateGotoPageInp);
 
 prvBtn.addEventListener("click", goPrevPage);
 nxtBtn.addEventListener("click", goNextPage);
