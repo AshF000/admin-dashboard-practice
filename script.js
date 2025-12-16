@@ -1,5 +1,3 @@
-// /** @type {HTMLInputElement} */
-
 const URL = `https://dummyjson.com/users`;
 
 // ELEMENTS
@@ -15,6 +13,7 @@ const prvBtn = document.getElementById("prvBtn");
 const nxtBtn = document.getElementById("nxtBtn");
 const pageBtns = document.getElementById("pageBtns");
 const table = document.querySelector("table");
+const showingPage = document.getElementById("showingPage");
 
 // VARIABLES
 let isLoading = false;
@@ -30,8 +29,6 @@ let currPage = 1;
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const getUsers = async (limit = perPageVal, skip = skipped) => {
-  // await delay(2000);
-
   try {
     const res = await fetch(
       `${URL}?limit=${limit}&skip=${skip}&select=firstName,email,gender`
@@ -42,6 +39,9 @@ const getUsers = async (limit = perPageVal, skip = skipped) => {
     const data = await res.json();
     total = data.total;
     users = data.users;
+    users.forEach((u) => {
+      u.status = u.gender.toLowerCase() === "male" ? "Active" : "Inactive";
+    });
     noofPages = Math.ceil(total / perPageVal);
   } catch (err) {
     console.log(err.message);
@@ -62,7 +62,6 @@ const pageNums = () => {
   let end = Math.min(noofPages, start + 8);
 
   for (let i = start; i <= end; i++) {
-    // console.log(i);
     const pageBtn = document.createElement("button");
     pageBtn.innerText = i;
     pageBtn.classList.add("goto");
@@ -77,6 +76,10 @@ const pageNums = () => {
 
     pageBtns.appendChild(pageBtn);
   }
+
+  showingPage.innerText = `Page ${currPage} of ${Math.ceil(
+    total / perPageVal
+  )}`;
 };
 
 const switchLoading = () => {
@@ -101,23 +104,26 @@ const updateShowPerPage = () => {
 };
 
 const updateGotoPageInp = () => {
-  console.log(gotoInp.value);
+  gotoPage(+gotoInp.value);
   gotoInp.value = "";
 };
 
-const updateStatus = (user) => {
-  console.log(user.firstName);
+const updateStatus = async (active, user, tr) => {
+  await delay(1000);
+  if (active) {
+    user.status = "Inactive";
+  } else {
+    user.status = "Active";
+  }
+  tr.innerHTML = `<span class="status">
+                <span class="pulse ${user.status.toLowerCase()}"></span>
+                ${user.status}
+            </span>`;
 };
 
 const deleteUser = (user) => {
   console.log(user.firstName);
 };
-
-// const updatePrvBtn = (prev) => {
-// };
-
-// const updateNxtBtn = (next) => {
-// };
 
 const updatePrvBtn = (prev) => {
   prvBtn.disabled = !prev;
@@ -168,7 +174,6 @@ const makeTable = async (list = users) => {
 
   for (let user of list) {
     const newTr = document.createElement("tr");
-    let gender = user.gender.toLowerCase();
 
     newTr.innerHTML = `<td>${user.id}</td>
         <td>${user.firstName}</td>
@@ -176,15 +181,15 @@ const makeTable = async (list = users) => {
         <td>
             <span class="status">
                 <span class="pulse ${
-                  gender === "male" ? "active" : "inactive"
+                  user.status === "Active" ? "active" : "inactive"
                 }"></span>
-                ${gender === "male" ? "Active" : "Inactive"}
+                ${user.status}
             </span>
         </td>
         <td>
           <button class="dltBtn">Delete</button>
           <button class="statusBtn">${
-            gender === "male" ? "Deactivate" : "Activate"
+            user.status === "Active" ? "Deactivate" : "Activate"
           }</button>
         </td>`;
 
@@ -192,7 +197,14 @@ const makeTable = async (list = users) => {
     const statusBtn = newTr.querySelector(".statusBtn");
     const dltBtn = newTr.querySelector(".dltBtn");
 
-    statusBtn.addEventListener("click", () => updateStatus(user));
+    statusBtn.addEventListener("click", () =>
+      updateStatus(
+        user.status === "Active",
+        user,
+        newTr.parentNode.childNodes[user.id - perPageVal * (currPage - 1)]
+          .childNodes[6]
+      )
+    );
     dltBtn.addEventListener("click", () => deleteUser(user));
 
     trFragment.appendChild(newTr);
@@ -212,5 +224,3 @@ gotoBtn.addEventListener("click", updateGotoPageInp);
 
 prvBtn.addEventListener("click", goPrevPage);
 nxtBtn.addEventListener("click", goNextPage);
-
-// load();
