@@ -28,6 +28,7 @@ let currPage = 1;
 
 // FUNCTIONS
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const getUsers = async (limit = perPageVal, skip = skipped) => {
   // await delay(2000);
 
@@ -44,10 +45,9 @@ const getUsers = async (limit = perPageVal, skip = skipped) => {
     noofPages = Math.ceil(total / perPageVal);
   } catch (err) {
     console.log(err.message);
-  } finally {
-    pageNums();
-    await makeTable();
   }
+  pageNums();
+  await makeTable();
 };
 
 (load = async () => {
@@ -84,8 +84,10 @@ const showSearchInpValue = () => {
 };
 
 const updateShowPerPage = () => {
-  perPageVal = +perPage.value;
-  getUsers();
+  perPageVal = perPage.value;
+  console.log(perPageVal);
+  currPage = 1;
+  getUsers(perPageVal, 0);
 };
 
 const updateGotoPage = () => {
@@ -101,53 +103,13 @@ const deleteUser = (user) => {
   console.log(user.firstName);
 };
 
-const updatePrvBtn = (prev) => {
-  if (!prev) {
-    prvBtn.classList.add("disabled");
-  } else {
-    prvBtn.classList.remove("disabled");
-  }
-  prvBtn.disabled = !prev;
-};
+const updatePrvBtn = (prev) => {};
 
-const updateNxtBtn = (next) => {
-  if (!next) {
-    nxtBtn.classList.add("disabled");
-  } else {
-    nxtBtn.classList.remove("disabled");
-  }
-  nxtBtn.disabled = !next;
-};
+const updateNxtBtn = (next) => {};
 
-const goPrevPage = async () => {
-  updatePrvBtn(false);
-  if (isLoading) return;
-  skipped = Math.max(0, skipped - perPageVal);
-  if (skipped + 1 === perPageVal - (perPageVal - 1)) return;
+const goPrevPage = async () => {};
 
-  isLoading = true;
-
-  await getUsers(perPageVal, skipped);
-
-  isLoading = false;
-  updatePrvBtn(true);
-  updateNxtBtn(true);
-};
-
-const goNextPage = async () => {
-  updateNxtBtn(true);
-  if (isLoading) return;
-  skipped = Math.min(total - perPageVal, skipped + perPageVal);
-  if (skipped + perPageVal >= total) return;
-
-  isLoading = true;
-
-  await getUsers(perPageVal, skipped);
-
-  isLoading = false;
-  updateNxtBtn(true);
-  updatePrvBtn(true);
-};
+const goNextPage = async () => {};
 
 const makeTable = async () => {
   table.innerHTML = "";
