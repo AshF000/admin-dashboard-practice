@@ -241,9 +241,17 @@ button:hover {
   opacity: 0.9;
 }
 
-td button.dltBtn {
-  background-color: var(--danger);
+td button.statusBtn {
+  /* background-color: var(--danger); */
   margin-left: 8px;
+}
+
+td button.statusBtn.activate {
+  background-color: var(--success);
+}
+
+td button.statusBtn.deactivate {
+  background-color: var(--danger);
 }
 
 /* ===== PAGINATION ===== */
@@ -280,7 +288,6 @@ td button.dltBtn {
   font-weight: 500;
 }
 
-
 button:disabled,
 button.disabled {
   background-color: #3a3a3c;
@@ -288,7 +295,6 @@ button.disabled {
   cursor: not-allowed !important;
   opacity: 0.6;
 }
-
 
 button:disabled:hover,
 button.disabled:hover {

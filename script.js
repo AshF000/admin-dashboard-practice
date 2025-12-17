@@ -108,17 +108,31 @@ const updateGotoPageInp = () => {
   gotoInp.value = "";
 };
 
-const updateStatus = async (active, user, tr) => {
-  await delay(1000);
-  if (active) {
+const updateStatus = async (user, tdStatus, statusBtn) => {
+  await delay(500);
+
+  const statusSpan = tdStatus.querySelector(".status");
+  const pulse = statusSpan.querySelector(".pulse");
+  const statusText = statusSpan.querySelector(".status-text");
+
+  if (user.status === "Active") {
     user.status = "Inactive";
+    pulse.classList.remove("active");
+    pulse.classList.add("inactive");
   } else {
     user.status = "Active";
+    pulse.classList.remove("inactive");
+    pulse.classList.add("active");
   }
-  tr.innerHTML = `<span class="status">
-                <span class="pulse ${user.status.toLowerCase()}"></span>
-                ${user.status}
-            </span>`;
+
+  // update status text
+  statusText.innerText = user.status;
+
+  // update button text
+  statusBtn.innerText = user.status === "Active" ? "Deactivate" : "Activate";
+
+  // update button color
+  statusBtn.style.backgroundColor = user.status === "Active" ? "red" : "green";
 };
 
 const deleteUser = (user) => {
@@ -174,36 +188,48 @@ const makeTable = async (list = users) => {
 
   for (let user of list) {
     const newTr = document.createElement("tr");
+    const tdId = document.createElement("td");
+    const tdFName = document.createElement("td");
+    const tdMail = document.createElement("td");
+    const tdStatus = document.createElement("td");
+    const statusSpan = document.createElement("span");
+    const statusPulse = document.createElement("span");
+    const tdAction = document.createElement("td");
+    const statusBtn = document.createElement("button");
+    const dltBtn = document.createElement("button");
+    tdId.innerText = user.id;
+    tdFName.innerText = user.firstName;
+    tdMail.innerText = user.email;
 
-    newTr.innerHTML = `<td>${user.id}</td>
-        <td>${user.firstName}</td>
-        <td>${user.email}</td>
-        <td>
-            <span class="status">
-                <span class="pulse ${
-                  user.status === "Active" ? "active" : "inactive"
-                }"></span>
-                ${user.status}
-            </span>
-        </td>
-        <td>
-          <button class="dltBtn">Delete</button>
-          <button class="statusBtn">${
-            user.status === "Active" ? "Deactivate" : "Activate"
-          }</button>
-        </td>`;
+    statusSpan.classList.add("status");
+    statusPulse.classList.add("pulse");
+    statusPulse.classList.add(user.status === "Active" ? "active" : "inactive");
+    const statusText = document.createElement("span");
+    statusText.classList.add("status-text");
+    statusText.innerText = user.status;
 
-    // Attach event listeners directly
-    const statusBtn = newTr.querySelector(".statusBtn");
-    const dltBtn = newTr.querySelector(".dltBtn");
+    statusSpan.append(statusPulse, statusText);
+    tdStatus.append(statusSpan);
+
+    dltBtn.classList.add("dltBtn");
+    dltBtn.innerText = "Delete";
+    statusBtn.classList.add("statusBtn");
+    statusBtn.classList.add(
+      user.status === "Active" ? "deactivate" : "activate"
+    );
+
+    statusBtn.innerText = `${
+      user.status === "Active" ? "Deactivate" : "Activate"
+    }`;
+
+    statusBtn.style.backgroundColor =
+      statusBtn.innerText === "Activate" ? "green" : "red";
+    tdAction.append(dltBtn, statusBtn);
+
+    newTr.append(tdId, tdFName, tdMail, tdStatus, tdAction);
 
     statusBtn.addEventListener("click", () =>
-      updateStatus(
-        user.status === "Active",
-        user,
-        newTr.parentNode.childNodes[user.id - perPageVal * (currPage - 1)]
-          .childNodes[6]
-      )
+      updateStatus(user, tdStatus, statusBtn)
     );
     dltBtn.addEventListener("click", () => deleteUser(user));
 
