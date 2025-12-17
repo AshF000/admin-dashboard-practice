@@ -3,24 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="style.css?v=1.0.1" />
     <title>Dashboard - Js</title>
   </head>
   <body>
     <div class="container">
+      <!-- <div id="modal">
+        <span id="modalCross" class="crossBtn">X</span>
+      </div> -->
+      <div id="modal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-box">
+    <div class="modal-header">
+      <h3 id="modalTitle">Modal Title</h3>
+      <span id="modalCross" class="crossBtn">✕</span>
+    </div>
+
+    <div id="modalBody" class="modal-body">
+      <!-- Dynamic content goes here -->
+    </div>
+
+    <div id="modalFooter" class="modal-footer">
+      <!-- Dynamic buttons go here -->
+    </div>
+  </div>
+</div>
+
       <div id="header">
         <h1>Admin Dashboard</h1>
         <h2>User Management</h2>
       </div>
 
       <div class="form">
-        <label for="searchInput">
+        <label for="searchInput" id="searchLabel">
           <input
             type="text"
             name="searchInput"
             id="searchInput"
             placeholder="Search User Name"
           />
+          <span id="srchInpCrss" class="crossBtn">X</span>
         </label>
 
         <div id="showPerPage">
@@ -67,6 +90,6 @@
 
     <script src="./utils/api.js"></script>
     <script src="./utils/debounce.js"></script>
-    <script src="script.js" defer></script>
+    <script src="script.js?v=1.0.1" defer></script>
   </body>
 </html>

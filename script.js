@@ -1,7 +1,10 @@
 const URL = `https://dummyjson.com/users`;
 
 // ELEMENTS
+const modalCross = document.getElementById("modalCross");
+const modal = document.getElementById("modal");
 const searchInp = document.getElementById("searchInput");
+const srchInpCrss = document.getElementById("srchInpCrss");
 
 const perPage = document.getElementById("perPage");
 
@@ -28,10 +31,12 @@ let currPage = 1;
 // FUNCTIONS
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const getUsers = async (limit = perPageVal, skip = skipped) => {
+const getUsers = async (limit = perPageVal, skip = skipped, search = "") => {
   try {
+    const base = search ? `${URL}/search?q=${search}&` : `${URL}?`;
+
     const res = await fetch(
-      `${URL}?limit=${limit}&skip=${skip}&select=firstName,email,gender`
+      `${base}limit=${limit}&skip=${skip}&select=firstName,lastName,email,gender`
     );
 
     if (!res.ok) throw new Error("res not okay");
@@ -46,8 +51,8 @@ const getUsers = async (limit = perPageVal, skip = skipped) => {
   } catch (err) {
     console.log(err.message);
   }
-  pageNums();
   await makeTable();
+  pageNums();
 };
 
 (load = async () => {
@@ -55,6 +60,10 @@ const getUsers = async (limit = perPageVal, skip = skipped) => {
   updatePrvBtn(currPage > 1);
   updateNxtBtn(currPage < noofPages);
 })();
+
+const closeModal = () => {
+  modal.style.display = "none";
+};
 
 const pageNums = () => {
   pageBtns.innerHTML = "";
@@ -86,14 +95,22 @@ const switchLoading = () => {
   isLoading = !isLoading;
 };
 
-const showSearchInpValue = () => {
+const clearSearchInp = () => {
+  searchInp.value = "";
+  srchInpCrss.style.display = "none";
+  currPage = 1;
+  skipped = 0;
+  getUsers();
+};
+
+const showSearchInpValue = async () => {
   const val = searchInp.value.toLowerCase();
-  const filteredUsers = users.filter(
-    (u) =>
-      u.firstName.toLowerCase().includes(val) ||
-      u.email.toLowerCase().includes(val)
-  );
-  makeTable(filteredUsers);
+  srchInpCrss.style.display = val ? "inline-block" : "none";
+  currPage = 1;
+  skipped = 0;
+  await getUsers(perPageVal, skipped, val);
+  updatePrvBtn(currPage > 1);
+  updateNxtBtn(noofPages > 1);
 };
 
 const updateShowPerPage = () => {
@@ -135,8 +152,22 @@ const updateStatus = async (user, tdStatus, statusBtn) => {
   statusBtn.style.backgroundColor = user.status === "Active" ? "red" : "green";
 };
 
-const deleteUser = (user) => {
-  console.log(user.firstName);
+const deleteUser = async (user, tr) => {
+  try {
+    const res = await fetch(`https://dummyjson.com/users/${user.id}`, {
+      method: `DELETE`,
+    });
+    const data = await res.json();
+    if (data.isDeleted) {
+      tr.remove();
+      users = users.filter((u) => u.id !== user.id);
+      pageNums();
+    } else {
+      alert(`Unable to delete ${user.firstName}`);
+    }
+  } catch (err) {
+    console.log(err.message);
+  }
 };
 
 const updatePrvBtn = (prev) => {
@@ -155,7 +186,7 @@ const gotoPage = async (page) => {
   currPage = page;
   skipped = perPageVal * (currPage - 1);
 
-  await getUsers(perPageVal, skipped);
+  await getUsers(perPageVal, skipped, searchInp.value.toLowerCase());
 
   isLoading = false;
   updatePrvBtn(currPage > 1);
@@ -174,6 +205,20 @@ const goNextPage = async () => {
 
 const makeTable = async (list = users) => {
   table.innerHTML = "";
+
+  if (!list || list.length === 0) {
+    const trMsg = document.createElement("tr");
+    const tdMsg = document.createElement("td");
+    tdMsg.innerText = "No users to show";
+    tdMsg.colSpan = 5;
+    tdMsg.style.textAlign = "center";
+    trMsg.append(tdMsg);
+    table.appendChild(trMsg);
+    updatePrvBtn(false);
+    updateNxtBtn(false);
+    pageNums();
+    return;
+  }
 
   const trFragment = document.createDocumentFragment();
   const headTr = document.createElement("tr");
@@ -198,7 +243,7 @@ const makeTable = async (list = users) => {
     const statusBtn = document.createElement("button");
     const dltBtn = document.createElement("button");
     tdId.innerText = user.id;
-    tdFName.innerText = user.firstName;
+    tdFName.innerText = user.firstName + " " + user.lastName;
     tdMail.innerText = user.email;
 
     statusSpan.classList.add("status");
@@ -231,7 +276,7 @@ const makeTable = async (list = users) => {
     statusBtn.addEventListener("click", () =>
       updateStatus(user, tdStatus, statusBtn)
     );
-    dltBtn.addEventListener("click", () => deleteUser(user));
+    dltBtn.addEventListener("click", () => deleteUser(user, newTr));
 
     trFragment.appendChild(newTr);
   }
@@ -242,7 +287,11 @@ const makeTable = async (list = users) => {
 const debouncedSearchInp = debounce(showSearchInpValue, 500);
 
 // EVENT LISTENERS
+
+modalCross.addEventListener("click", closeModal);
+
 searchInp.addEventListener("input", debouncedSearchInp);
+srchInpCrss.addEventListener("click", clearSearchInp);
 
 perPage.addEventListener("change", updateShowPerPage);
 

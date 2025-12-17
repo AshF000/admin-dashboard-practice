@@ -43,7 +43,25 @@ body {
 .container {
   max-width: 1100px;
   margin: auto;
+  position: relative;
 }
+
+/* #modal {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 999;
+}
+
+#modalCross {
+  position: absolute;
+  top: 0;
+  right: 0;
+  font-size: 1.3rem;
+} */
 
 /* ===== HEADINGS ===== */
 
@@ -86,8 +104,27 @@ select {
   transition: 0.2s;
 }
 
+input[type="number"]::-webkit-inner-spin-button {
+  display: none;
+}
+
 #searchInput {
   width: 20rem;
+}
+
+#searchLabel {
+  position: relative;
+}
+
+/* #srchInpCrss { */
+.crossBtn {
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  /* display: none; */
+  font-size: 0.8rem;
+  cursor: pointer;
 }
 
 input::placeholder {
@@ -317,6 +354,7 @@ button.disabled:hover {
 
 #gotoDirect input {
   width: 80px;
+  height: 30px;
 }
 
 /* ===== FOOTER INFO ===== */
