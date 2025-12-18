@@ -1,7 +1,7 @@
 const URL = `https://dummyjson.com/users`;
 
 // ELEMENTS
-const modalCross = document.getElementById("modalCross");
+// const modalCross = document.getElementById("modalCross");
 const modal = document.getElementById("modal");
 const searchInp = document.getElementById("searchInput");
 const srchInpCrss = document.getElementById("srchInpCrss");
@@ -288,7 +288,7 @@ const debouncedSearchInp = debounce(showSearchInpValue, 500);
 
 // EVENT LISTENERS
 
-modalCross.addEventListener("click", closeModal);
+// modalCross.addEventListener("click", closeModal);
 
 searchInp.addEventListener("input", debouncedSearchInp);
 srchInpCrss.addEventListener("click", clearSearchInp);
