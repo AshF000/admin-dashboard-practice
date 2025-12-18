@@ -1,4 +1,5 @@
 # User Management Admin Dashboard
+Live: https://ashf000.github.io/admin-dashboard-practice/
 
 A vanilla JavaScript **practice project** that simulates a real-world admin dashboard for managing users.
 
